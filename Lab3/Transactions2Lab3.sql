@@ -1,0 +1,61 @@
+/*Dirty Read
+Transaction2: SELECT + WAIT + SELECT 
+*/
+
+CREATE OR ALTER PROCEDURE DR2 AS
+BEGIN
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	BEGIN TRAN
+	SELECT * FROM City;
+	WAITFOR DELAY '00:00:10'
+	SELECT * FROM City;
+	COMMIT TRAN 
+
+END;
+
+
+EXEC DR2;
+/* Solution*/
+GO
+CREATE OR ALTER PROCEDURE DR2S AS
+BEGIN
+	/*
+	Nivelul de izorale a fost schimbat  de la "read uncommitted" la "read committed"
+	Primul select este executat doar dupa ce prima tranzactie este efectuata*/
+	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
+	BEGIN TRAN
+	SELECT * FROM City
+	WAITFOR DELAY '00:00:10'
+	SELECT * FROM City
+	COMMIT TRAN
+END;
+EXEC DR2S
+
+/*Non Repeatable Reads
+Transaction: UPDATE
+*/
+GO
+CREATE OR ALTER PROCEDURE NRR2(
+@cityid int)AS
+BEGIn
+	BEGIN TRAN
+	UPDATE City
+	SET name='Modified'
+	WHERE cityid=@cityid
+	COMMIT TRAN
+END;
+EXEC NRR2 1;
+
+/*Phantom Reads
+Transaction2: INSERT*/
+GO
+CREATE OR ALTER PROCEDURE PR2
+AS BEGIN
+	BEGIN TRAN
+	INSERT INTO City VALUES (10,'Insert from TRAN2')
+	COMMIT TRAN
+END;
+
+EXEC PR2;
+SELECT * FROM City
+DELETE FROM City WHERE cityid=10;

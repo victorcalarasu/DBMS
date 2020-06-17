@@ -1,0 +1,58 @@
+﻿@model IEnumerable<WebApplication1.Models.File>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Multimedia File Collection</h2>
+
+<p>
+    @Html.ActionLink("Add new file", "Create")
+</p>
+@using (Html.BeginForm())
+{
+    <p>
+        Filter by genre:@Html.TextBox("SearchString")
+        <input type="submit" value="Filter"/>
+
+    </p>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.format_type)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.genre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.path)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.format_type)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.genre)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.path)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+        </td>
+    </tr>
+}
+
+</table>
